@@ -1,0 +1,24 @@
+{
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "description": "Simple discord bot to organize",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Madfix-me/Discord-Bot.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "madfix.me"
+  ],
+  "author": "p.glanz@madfix.me",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Madfix-me/Discord-Bot/issues"
+  },
+  "homepage": "https://github.com/Madfix-me/Discord-Bot#readme"
+}
