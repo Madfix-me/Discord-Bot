@@ -4,7 +4,10 @@
   "description": "Simple discord bot to organize",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -P tsconfig.json",
+    "poststart": "npm run build",
+    "start": "npm run build && node ./dist/bootstrap.js"
   },
   "repository": {
     "type": "git",
@@ -22,14 +25,28 @@
   },
   "homepage": "https://github.com/Madfix-me/Discord-Bot#readme",
   "dependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "@discordjs/voice": "^0.8.0",
+    "bufferutil": "^4.0.6",
+    "discord-api-types": "^0.29.0",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
+    "erlpack": "github:discord/erlpack",
     "pg": "^8.7.3",
     "sql.js": "^1.6.2",
     "sqlite3": "^5.0.2",
-    "typeorm": "^0.3.1"
+    "typeorm": "^0.3.1",
+    "utf-8-validate": "^5.0.9",
+    "zlib-sync": "^0.1.7"
   },
   "devDependencies": {
-    "@types/node": "^17.0.22"
+    "@types/node": "^17.0.22",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.2.0"
   }
 }
