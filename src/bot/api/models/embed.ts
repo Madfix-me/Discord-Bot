@@ -1,6 +1,7 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Author } from "./author";
 import { Title } from "./title";
+import {Footer} from "./footer";
 
 @Entity()
 export class Embed {
@@ -19,6 +20,7 @@ export class Embed {
     @Column()
     message?: String;
 
-
+    @OneToOne(() => Footer, footer => footer.embed)
+    footer?: Footer;
 
 }
