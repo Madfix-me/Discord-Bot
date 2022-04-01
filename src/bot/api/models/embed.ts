@@ -1,6 +1,6 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Author } from "./Author";
-import { Title } from "./Title";
+import { Author } from "./author";
+import { Title } from "./title";
 
 @Entity()
 export class Embed {
@@ -11,8 +11,14 @@ export class Embed {
     color?: string;
 
     @OneToOne(() => Author, author => author.embed)
-    author?: Author
+    author?: Author;
 
     @OneToOne(() => Title, title => title.embed)
-    title?: Title
+    title?: Title;
+
+    @Column()
+    message?: String;
+
+
+
 }

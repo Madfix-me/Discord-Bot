@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { DiscordBot } from "./bot/discord_bot";
+import { DiscordBot } from "./bot/discordBot";
 import { Intents } from "discord.js";
 
 async function main () {

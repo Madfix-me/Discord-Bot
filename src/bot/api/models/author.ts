@@ -1,5 +1,5 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Embed } from "./Embed";
+import { Embed } from "./embed";
 
 @Entity()
 export class Author {

@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Reaction } from "./Reaction";
+import { Reaction } from "./reaction";
 
 @Entity()
 export class RoleToEmoji {
