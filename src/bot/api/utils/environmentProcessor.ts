@@ -12,6 +12,9 @@ export class EnvironmentProcessor {
             synchronize: true,
             logging: true,
             logger: new TypeormWinstonAdapter(),
+            entities: [
+                "src/bot/api/models/*.ts",
+            ],
         });
     }
 
