@@ -1,8 +1,8 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import { RoleToEmoji } from "./roleToEmoji";
 
 @Entity()
-export class Reaction {
+export class Reaction extends BaseEntity {
     @PrimaryGeneratedColumn()
     id?: number;
 
