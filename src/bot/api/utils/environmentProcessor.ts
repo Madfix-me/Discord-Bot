@@ -8,7 +8,7 @@ export class EnvironmentProcessor {
     public static dataSqlLiteSource(): DataSource {
         return new DataSource({
             type: "sqlite",
-            database: "data/bot.db",
+            database: "/dev/data/bot.db",
             synchronize: true,
             logging: true,
             logger: new TypeormWinstonAdapter(),
@@ -26,6 +26,9 @@ export class EnvironmentProcessor {
             username: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
+            entities: [
+                "src/bot/api/models/*.ts",
+            ],
             synchronize: true,
             logging: false
         });
