@@ -1,10 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {BaseEntity, Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import { Author } from "./author";
 import { Title } from "./title";
 import {Footer} from "./footer";
 
 @Entity()
-export class Embed {
+export class Embed extends BaseEntity {
     @PrimaryGeneratedColumn()
     id?: number;
 
