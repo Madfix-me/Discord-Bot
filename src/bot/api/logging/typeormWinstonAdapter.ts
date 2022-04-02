@@ -1,9 +1,8 @@
 import {Logger, QueryRunner} from "typeorm";
 import winston from "winston";
 
-export class TypeormWinstonAdapter implements Logger{
+export class TypeormWinstonAdapter implements Logger {
     log(level: "log" | "info" | "warn", message: any, queryRunner?: QueryRunner): any {
-
         winston.log(level, message);
     }
 
