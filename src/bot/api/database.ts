@@ -7,13 +7,14 @@ export class Database {
 
     public readonly _dataSource: DataSource;
 
-    constructor() {
+    constructor(result: () => void) {
         this._dataSource = EnvironmentProcessor.isProduction() ? EnvironmentProcessor.dataPostgresSource() : EnvironmentProcessor.dataSqlLiteSource();
         this._dataSource.initialize().then(() => {
             winston.info("Database initialized");
-        }).catch(error => {
+            result();
+        }).catch(reason => {
             winston.error("Database initialization failed");
-            winston.error(error);
+            winston.error(reason);
         });
     }
 }
