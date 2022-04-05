@@ -1,0 +1,16 @@
+{
+  "channel" : "814772801684111380",
+  "content" : [
+    {
+      "color": "#00ff00",
+      "message" : "Hallo Welt!",
+      "title": "Regeln | Part A"
+    }
+  ],
+  "accept": [
+    {
+      "emoji": "✅",
+      "role": "933673917497880577"
+    }
+  ]
+}
