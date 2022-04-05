@@ -1,42 +1,64 @@
-import {Client, ClientOptions, TextChannel} from "discord.js";
+import {Client, ClientOptions, SnowflakeUtil} from "discord.js";
 import { REST } from "@discordjs/rest";
-import {Database} from "./api/database";
 import winston from "winston";
-import {RoleToEmoji} from "./api/models/roleToEmoji";
+import {container, injectable, registry} from "tsyringe";
+import {Routes} from "discord-api-types/v10";
+import {BotCommandExecutor} from "./api/command/botCommandExecutor";
+import {RuleListener} from "./rule/ruleListener";
 
+@injectable()
+@registry(
+    [
+        {
+            token: "listener",
+            useToken: RuleListener
+        }
+    ]
+)
 export class DiscordBot {
     private readonly _discordClient?: Client;
     private readonly _rest?: REST;
-    private readonly _database: Database;
-
-    constructor (options: ClientOptions, restOption: { version: string }, databaseReady: () => void ){
-        winston.info("Initializing Discord Bot");
-        winston.info("Connecting to database");
-        this._database = new Database(databaseReady);
-        winston.info("Connected to database");
+    private readonly parserChannel;
+    private readonly guildId?: string;
+    private readonly clientId?: string;
+    constructor (options: ClientOptions, restOption: { version: string }){
+        this.parserChannel = process.env.DISCORD_PARSER_CHANNEL;
+        this.guildId = process.env.DISCORD_GUILD_ID;
+        this.clientId = process.env.DISCORD_CLIENT_ID;
         winston.info("Connecting to Discord");
         this._discordClient = new Client(options);
         this._rest = new REST(restOption);
         winston.info("Connected to Discord");
         this._discordClient.on("ready", () => this._onReady()); // TODO: Check how i can improve this
         winston.info("Discord Bot initialized");
+        container.register("discordClient", {useValue: this._discordClient});
+        container.register("discordRest", {useValue: this._rest});
+        container.resolveAll("listener");
+
     }
 
     public async start () {
         this._rest!.setToken(process.env.DISCORD_TOKEN!);
+        /*const commands = container.resolveAll<BotCommandExecutor>("command").map(value => {
+            winston.info(`Registering command ${value.getCommand().name}`);
+            return value.getCommand().toJSON();
+        })
+        this._rest?.put(Routes.applicationGuildCommands(this.clientId!,this.guildId!), {body: commands}).then(() => {
+            winston.info("Commands registered");
+        }).catch(error => {
+            winston.error(error);
+        })*/
         await this._discordClient!.login(process.env.DISCORD_TOKEN!);
     }
 
     private async _onReady (): Promise<void> {
         winston.info(`Discord Bot ready - ${this._discordClient!.user!.tag}`);
-        this._discordClient?.user?.setActivity("Just watching how to learn programming a dc bot", {type: "WATCHING"});
-        await this._checkAllRoleToEmoji();
     }
 
-    private async _checkAllRoleToEmoji(): Promise<void> {
-        const repo = this._database._dataSource.getRepository<RoleToEmoji>(RoleToEmoji);
-        const count = await repo.count();
-        winston.info(`Checking ${count} role to emoji`);
+    get discordClient(): Client {
+        return this._discordClient!;
     }
+
+
 
 }
