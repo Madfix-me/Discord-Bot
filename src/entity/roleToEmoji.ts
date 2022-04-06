@@ -1,13 +1,13 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Rule} from "./rule";
 
 @Entity()
-export class RoleToEmoji {
+export class RoleToEmoji extends BaseEntity {
     @PrimaryGeneratedColumn()
     id?: number
 
-    @Column({type: "bigint"})
-    role?: number;
+    @Column()
+    role?: string;
 
     @Column()
     emoji?: string;

@@ -2,6 +2,10 @@
 Simple discord bot to orgaize the discord server
 
 
-### 
-Style Guide  
+### Style Guide  
 - [TypeScript](https://github.com/basarat/typescript-book/blob/master/docs/styleguide/styleguide.md)
+
+
+### Plan to go
+
+- [ ] Give roles based on reactions

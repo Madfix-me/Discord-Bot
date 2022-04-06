@@ -1,11 +1,11 @@
-import {Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, JoinTable, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Embed} from "./embed";
 import {RoleToEmoji} from "./roleToEmoji";
 import {jsonMember, jsonObject} from "typedjson";
 
 
 @Entity()
-export class Rule {
+export class Rule extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id?: number;
@@ -23,11 +23,13 @@ export class Rule {
     channel?: string;
 
 
-    @OneToMany(type => Embed, object => object.rule, {cascade: true, onUpdate: "CASCADE"})
+    @OneToMany(() => Embed, object => object.rule, {cascade: true, onUpdate: "CASCADE"})
+    @JoinTable()
     content?: Embed[];
 
 
-    @OneToMany(type => RoleToEmoji, object => object.rule,{cascade: true, onUpdate: "CASCADE"})
+    @OneToMany(() => RoleToEmoji, object => object.rule,{cascade: true, onUpdate: "CASCADE"})
+    @JoinTable()
     accept?: RoleToEmoji[] ;
 }
 

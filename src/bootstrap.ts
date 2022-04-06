@@ -2,6 +2,7 @@ import "dotenv/config";
 import {DiscordBot} from "./bot/discordBot";
 import {Intents} from "discord.js";
 import winston from "winston";
+
 export async function main() {
     winston.add(new winston.transports.Console(
         {
@@ -10,6 +11,7 @@ export async function main() {
                 winston.format.simple()
             ),
             handleExceptions: true,
+            level: "debug"
         }
     ));
     winston.add(new winston.transports.File({filename: "logs/error.log", level: "error"}));
@@ -24,7 +26,10 @@ export async function main() {
         ),
         zippedArchive: true,
     }));
-    const bot = new DiscordBot({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]}, {version: "9"});
+    const bot = new DiscordBot({
+        intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MEMBERS],
+        partials: ['MESSAGE', 'CHANNEL', 'REACTION']
+    }, {version: "10"});
     await bot.start();
 }
 

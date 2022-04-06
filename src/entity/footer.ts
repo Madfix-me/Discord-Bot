@@ -1,10 +1,10 @@
-import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Embed} from "./embed";
 import {EmbedFooterData} from "discord.js";
 
 
 @Entity()
-export class Footer {
+export class Footer extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id?: number;

@@ -1,16 +1,10 @@
 {
-  "channel" : "814772801684111380",
+  "channel" : "960978637123899432",
   "content" : [
     {
       "color": "#00ff00",
       "message" : "Hallo Welt!",
       "title": "Regeln | Part A"
-    },
-    {
-      "color": "#ff2700",
-      "message" : "Hallo Welt 2!",
-      "title": "Regeln | Part B",
-      "discordId": "960982530004226178"
     }
   ],
   "accept": [

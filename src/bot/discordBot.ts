@@ -1,10 +1,9 @@
 import {Client, ClientOptions, SnowflakeUtil} from "discord.js";
-import { REST } from "@discordjs/rest";
+import {REST} from "@discordjs/rest";
 import winston from "winston";
 import {container, injectable, registry} from "tsyringe";
-import {Routes} from "discord-api-types/v10";
-import {BotCommandExecutor} from "./api/command/botCommandExecutor";
 import {RuleListener} from "./rule/ruleListener";
+import {RolesListener} from "./roles/rolesListener";
 
 @injectable()
 @registry(
@@ -12,6 +11,10 @@ import {RuleListener} from "./rule/ruleListener";
         {
             token: "listener",
             useToken: RuleListener
+        },
+        {
+            token: "listener",
+            useToken: RolesListener
         }
     ]
 )
@@ -21,7 +24,8 @@ export class DiscordBot {
     private readonly parserChannel;
     private readonly guildId?: string;
     private readonly clientId?: string;
-    constructor (options: ClientOptions, restOption: { version: string }){
+
+    constructor(options: ClientOptions, restOption: { version: string }) {
         this.parserChannel = process.env.DISCORD_PARSER_CHANNEL;
         this.guildId = process.env.DISCORD_GUILD_ID;
         this.clientId = process.env.DISCORD_CLIENT_ID;
@@ -37,7 +41,7 @@ export class DiscordBot {
 
     }
 
-    public async start () {
+    public async start() {
         this._rest!.setToken(process.env.DISCORD_TOKEN!);
         /*const commands = container.resolveAll<BotCommandExecutor>("command").map(value => {
             winston.info(`Registering command ${value.getCommand().name}`);
@@ -51,14 +55,13 @@ export class DiscordBot {
         await this._discordClient!.login(process.env.DISCORD_TOKEN!);
     }
 
-    private async _onReady (): Promise<void> {
+    private async _onReady(): Promise<void> {
         winston.info(`Discord Bot ready - ${this._discordClient!.user!.tag}`);
     }
 
     get discordClient(): Client {
         return this._discordClient!;
     }
-
 
 
 }

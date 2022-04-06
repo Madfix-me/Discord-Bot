@@ -1,6 +1,6 @@
 import {inject, injectable} from "tsyringe";
 import {
-    Client,
+    Client, GuildEmoji,
     MessageEmbed,
     MessageReaction,
     PartialMessageReaction,
@@ -34,44 +34,58 @@ export class RuleListener {
 
             }
         );
+        client.on("messageReactionAdd", async (message, user) => await this.onReactAdd(message, user));
+        client.on("messageReactionRemove", async (message, user) => await this.onReactRemove(message, user));
         client.on("ready", () => this.onStart());
-        client.on("messageReactionAdd", (message, user) => this.onReact(message, user));
     }
 
     private async onStart(): Promise<void> {
         winston.info("RuleListener started");
 
         for (const rule of this.rules) {
-            const dbRule: Rule | null = await AppDataSource.manager.findOne<Rule>(Rule, {where: {path: rule.path}});
+            const dbRule: Rule | null = await AppDataSource.manager.findOne<Rule>(Rule, {where: {path: rule.path}, relations: ["content"]});
             if (dbRule) {
                 if (dbRule.hash !== rule.hash) {
 
                     await AppDataSource.manager.transaction(async transactionalEntityManager => {
-                        await transactionalEntityManager.save({
-                            id: dbRule.id,
-                            path: rule.path,
-                            hash: rule.hash,
-                            content: rule.content
-                        });
-                        winston.info(`Rule ${rule.path} has been updated`);
-                        for (let i = 0; i < rule.content!.length; i++) {
-                            const embed = rule.content![i] as Embed;
-                            const channel = this.client.channels.cache.get(rule.channel!);
-                            if (channel != null && channel.isText()) {
-                                const textChannel = channel as TextChannel;
-                                const message = await textChannel.messages.cache.get(embed.discordId!);
+                        const embeds = dbRule.content!;
+                        const channel = this.client.channels.cache.get(rule.channel!);
+                        if (channel != null && channel.isText()) {
+                            const textChannel = channel as TextChannel;
+                            for (const embed of embeds) {
+                                const message = textChannel.messages.cache.get(embed.discordId!);
                                 if (message) {
-                                    await message.edit({embeds: [this.toEmbed(embed, message.embeds[0])]})
+                                    const reactions = message.reactions.cache.values();
+                                    for (let reaction of reactions) {
+                                        for (let user of reaction.users.cache.values()) {
+
+                                        }
+                                    }
+                                }
+                                await textChannel.messages.delete(embed.discordId!);
+                                await transactionalEntityManager.remove(Embed,embed);
+                            }
+                            await transactionalEntityManager.save(Rule,{
+                                id: dbRule.id,
+                                path: rule.path,
+                                hash: rule.hash,
+                                content: rule.content
+                            });
+                            for (let i = 0; i < rule.content!.length; i++) {
+                                const embed = rule.content![i] as Embed;
+                                    const message = await textChannel.send({embeds: [this.toEmbed(embed)]});
+                                    embed.discordId = message.id;
+                                    await transactionalEntityManager.save(Embed, embed);
                                     if (i == (rule.content!.length - 1)) {
                                         for (let roleToEmoji of rule.accept!) {
                                             await message.react(roleToEmoji.emoji!);
                                             winston.info(`Reacted with ${roleToEmoji.emoji} to ${message.id}`);
                                         }
-                                    }
-                                }
+                                   }
 
                             }
                         }
+                        winston.info(`Rule ${rule.path} has been updated`);
                     });
                 } else {
                     winston.info(`Rule ${rule.path} is up to date`);
@@ -102,8 +116,59 @@ export class RuleListener {
         }
     }
 
-    private async onReact(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): Promise<void> {
-        winston.info(`Reacted with ${reaction.emoji.name} to ${reaction.message.id}`);
+
+    private async onReactAdd(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): Promise<void> {
+        if (!reaction.me) {
+            const channelId = reaction.message.channel.id;
+            await AppDataSource.manager.transaction(async transactionalEntityManager => {
+                const dbRule = await transactionalEntityManager.findOne(Rule, {where: {channel: channelId}, relations: ["accept"]});
+                if (dbRule) {
+                    const embed = await transactionalEntityManager.findOne(Embed, {where: {discordId: reaction.message.id}});
+                    if (embed) {
+                        const roleToEmoji = dbRule.accept!.find(roleToEmoji => roleToEmoji.emoji === reaction.emoji.name);
+                        if (roleToEmoji) {
+                            const role = reaction.message.guild?.roles.cache.get(roleToEmoji.role!);
+                            if (role) {
+                                const member = await reaction.message.guild?.members.fetch(user.id);
+                                if (member) {
+                                    await member.roles.add(role);
+                                    winston.debug(`Added role ${role.name} to ${member.user.tag}`);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            });
+        }
+
+
+    }
+
+    private async onReactRemove(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): Promise<void> {
+        if (!reaction.me) {
+            const channelId = reaction.message.channel.id;
+            await AppDataSource.manager.transaction(async transactionalEntityManager => {
+                const dbRule = await transactionalEntityManager.findOne(Rule, {where: {channel: channelId}, relations: ["accept"]});
+                if (dbRule) {
+                    const embed = await transactionalEntityManager.findOne(Embed, {where: {discordId: reaction.message.id}});
+                    if (embed) {
+                        const roleToEmoji = dbRule.accept!.find(roleToEmoji => roleToEmoji.emoji === reaction.emoji.name);
+                        if (roleToEmoji) {
+                            const role = reaction.message.guild?.roles.cache.get(roleToEmoji.role!);
+                            if (role) {
+                                const member = await reaction.message.guild?.members.fetch(user.id);
+                                if (member) {
+                                    await member.roles.remove(role);
+                                    winston.debug(`Remove role ${role.name} to ${member.user.tag}`);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private toEmbed(embed: Embed, x?: MessageEmbed): MessageEmbed {

@@ -1,16 +1,15 @@
-import {Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Author} from "./author";
-import {Title} from "./title";
-import {Footer} from "./footer";
 import {Rule} from "./rule";
 import {HexColorString, MessageEmbed} from "discord.js";
+import {Footer} from "./footer";
 
 @Entity()
-export class Embed {
+export class Embed extends BaseEntity {
     @PrimaryGeneratedColumn("increment")
     public id?: number;
 
-    @Column({nullable: true})
+    @Column({nullable: true, unique: true})
     public discordId?: string;
 
     @Column()
@@ -26,6 +25,7 @@ export class Embed {
     public message: string = "";
 
     @OneToOne(() => Footer, footer => footer.embed, {cascade: true, onUpdate: "CASCADE"})
+    @JoinTable()
     public footer?: Footer;
 
 
