@@ -34,7 +34,7 @@
     "erlpack": "github:discord/erlpack",
     "pg": "^8.7.3",
     "sql.js": "^1.6.2",
-    "sqlite3": "^5.0.2",
+    "sqlite3": "^5.0.3",
     "typeorm": "^0.3.1",
     "utf-8-validate": "^5.0.9",
     "zlib-sync": "^0.1.7"
